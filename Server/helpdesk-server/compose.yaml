@@ -1,9 +1,17 @@
 services:
-  postgres:
-    image: 'postgres:latest'
+  postgres-compose:
+    image: postgres
+    container_name: postgres-dev
+
     environment:
-      - 'POSTGRES_DB=mydatabase'
-      - 'POSTGRES_PASSWORD=secret'
-      - 'POSTGRES_USER=myuser'
+      POSTGRES_DB: helpdesk
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+
     ports:
-      - '5432'
+      - "5433:5432"
+
+    volumes:
+      - D:/DEV/doc-postgres:/var/lib/postgresql
+
+    restart: unless-stopped
