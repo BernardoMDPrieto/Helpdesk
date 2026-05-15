@@ -42,4 +42,5 @@ jobs:
           node-version: '22'
 
       - name: Build frontend
+        working-directory: Client/helpdesk
         run: npm ci && npm run build
