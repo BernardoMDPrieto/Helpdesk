@@ -29,6 +29,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Run backend tests
+        working-directory: Server/helpdesk-server
         run: ./mvnw test
 
   frontend:
