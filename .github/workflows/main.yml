@@ -26,15 +26,20 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: 'corretto'
+          distribution: 'temurin'
 
       - name: Run backend tests
-        run: cd backend && ./mvnw test
+        run: ./mvnw test
 
   frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
       - name: Build frontend
-        run: cd frontend && npm ci && npm run build
+        run: npm ci && npm run build
