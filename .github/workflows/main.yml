@@ -30,7 +30,9 @@ jobs:
 
       - name: Run backend tests
         working-directory: Server/helpdesk-server
-        run: ./mvnw test
+        run: |
+          chmod +x mvnw
+          ./mvnw test
 
   frontend:
     runs-on: ubuntu-latest
