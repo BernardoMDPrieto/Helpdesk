@@ -30,6 +30,11 @@ jobs:
 
       - name: Run backend tests
         working-directory: Server/helpdesk-server
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/helpdesk
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: admin
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
         run: |
           chmod +x mvnw
           ./mvnw test
