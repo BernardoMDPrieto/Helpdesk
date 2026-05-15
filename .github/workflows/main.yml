@@ -1,5 +1,4 @@
 name: CI
-
 on: [push, pull_request]
 
 jobs:
@@ -12,14 +11,30 @@ jobs:
           POSTGRES_DB: helpdesk
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: admin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
-        with: { java-version: '21', distribution: 'corretto-1.8' }
-      - run: cd backend && ./mvnw test
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Run backend tests
+        run: cd backend && ./mvnw test
 
   frontend:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: cd frontend && npm ci && npm run build
+
+      - name: Build frontend
+        run: cd frontend && npm ci && npm run build
