@@ -1,15 +1,23 @@
 package com.bduarte.helpdeskserver.services;
 
-import com.bduarte.helpdeskserver.dto.CreateUserDTO;
+import com.bduarte.helpdeskserver.api.filters.UserSpecification;
+import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
+import com.bduarte.helpdeskserver.api.filters.UserFilter;
+import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.models.User;
 import com.bduarte.helpdeskserver.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.swing.text.html.Option;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,4 +44,26 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public Page<UserResponse> getUsers(UserFilter userFilter, Pageable pageable) {
+        try {
+            Specification<User> spec = UserSpecification.bySpecification(userFilter);
+
+            Page<User> users = userRepository.findAll(spec, pageable);
+            List<UserResponse> userResponseList = users.getContent().stream().map(this::converUserResponse).toList();
+
+            return new PageImpl<>(userResponseList, pageable, users.getTotalElements());
+        } catch (Exception exception) {
+            throw exception;
+        }
+    }
+
+
+    private UserResponse converUserResponse(User user) {
+        UserResponse userResponse = new UserResponse(
+                user.getEmail(),
+                user.getUserName(),
+                user.getEnabled(),
+                user.getRole());
+        return userResponse;
+    }
 }

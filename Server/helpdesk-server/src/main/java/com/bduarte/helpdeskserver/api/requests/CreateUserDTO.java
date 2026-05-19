@@ -1,5 +1,6 @@
-package com.bduarte.helpdeskserver.dto;
+package com.bduarte.helpdeskserver.api.requests;
 
+import com.bduarte.helpdeskserver.models.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -19,6 +20,9 @@ public class CreateUserDTO {
     @Email(message = "Email deve ter formato válido")
     @NotBlank(message = "Email é obrigatório")
     private String email;
+
+    @NotBlank(message = "Função é obrigatória")
+    private Role role;
 
     @NotBlank(message = "Senha é obrigatória")
     @Size(min = 8, message = "Senha deve ter no mínimo 8 caracteres")
