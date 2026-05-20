@@ -12,14 +12,16 @@ import java.util.UUID;
 @Entity()
 @Table(name = "users")
 @Data
+@NoArgsConstructor
 public class User {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public User(String email, String userName, String password) {
+    public User(String email, String userName, String password, Role role) {
         this.email = email;
         this.userName = userName;
         this.password = password;
+        this.role = role;
     }
 
     @Id
@@ -43,6 +45,10 @@ public class User {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 
     @PrePersist
     public void prePersist() {
