@@ -17,10 +17,11 @@ public class User {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    public User(String email, String userName, String password) {
+    public User(String email, String userName, String password, Role role) {
         this.email = email;
         this.userName = userName;
         this.password = password;
+        this.role = role;
     }
 
     @Id

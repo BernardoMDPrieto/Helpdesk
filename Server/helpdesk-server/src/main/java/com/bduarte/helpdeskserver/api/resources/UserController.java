@@ -16,17 +16,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/Account")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @GetMapping("/")
-    public ResponseEntity<String> getRoute() {
-        return ResponseEntity.status(HttpStatus.OK).body("Route OK");
-    }
-
-    @PostMapping()
+    @PostMapping("/user")
     public ResponseEntity<Void> CreateUser(@Valid @RequestBody CreateUserDTO userDTO) {
         try {
             User response = userService.CreateNewUser(userDTO);
@@ -37,7 +32,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/List")
+    @GetMapping("/user")
     public ResponseEntity<Page<UserResponse>> getUsers(@ModelAttribute UserFilter userFilter,
                                                        @PageableDefault(page = 0, size = 10, sort = "userName", direction = Sort.Direction.ASC) Pageable pageable) {
 

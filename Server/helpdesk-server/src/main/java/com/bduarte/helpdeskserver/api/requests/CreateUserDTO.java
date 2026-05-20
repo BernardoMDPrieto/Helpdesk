@@ -21,7 +21,6 @@ public class CreateUserDTO {
     @NotBlank(message = "Email é obrigatório")
     private String email;
 
-    @NotBlank(message = "Função é obrigatória")
     private Role role;
 
     @NotBlank(message = "Senha é obrigatória")
