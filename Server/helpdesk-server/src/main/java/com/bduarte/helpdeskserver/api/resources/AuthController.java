@@ -1,6 +1,6 @@
 package com.bduarte.helpdeskserver.api.resources;
 
-import com.bduarte.helpdeskserver.security.UserDetailsImpl;
+import com.bduarte.helpdeskserver.infrastructure.security.UserDetailsImpl;
 import com.bduarte.helpdeskserver.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
