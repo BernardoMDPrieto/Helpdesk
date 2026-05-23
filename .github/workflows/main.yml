@@ -32,9 +32,13 @@ jobs:
         working-directory: Server/helpdesk-server
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/helpdesk
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: admin
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.HELPDESK_DB_USER }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.HELPDESK_DB_PASS }}
           SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+          JWT_SECRET: ${{ secrets.HELPDESK_JWT_SECRET }}
+          APP_MAIL_ADDRESS: ${{ secrets.HELPDESK_MAIL_ADDRESS }}
+          APP_MAIL_PASS: ${{ secrets.HELPDESK_MAIL_PASS }}
+          APP_MAIL_HOST: ${{ secrets.HELPDESK_MAIL_HOST }}
         run: |
           chmod +x mvnw
           ./mvnw test
