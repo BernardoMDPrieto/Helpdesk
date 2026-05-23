@@ -1,4 +1,4 @@
-package com.bduarte.helpdeskserver.security;
+package com.bduarte.helpdeskserver.infrastructure.security;
 
 import com.bduarte.helpdeskserver.services.JwtService;
 import com.bduarte.helpdeskserver.services.UserDetailsServiceImpl;

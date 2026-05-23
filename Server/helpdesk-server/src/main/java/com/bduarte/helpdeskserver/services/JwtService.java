@@ -1,6 +1,6 @@
 package com.bduarte.helpdeskserver.services;
 
-import com.bduarte.helpdeskserver.security.UserDetailsImpl;
+import com.bduarte.helpdeskserver.infrastructure.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

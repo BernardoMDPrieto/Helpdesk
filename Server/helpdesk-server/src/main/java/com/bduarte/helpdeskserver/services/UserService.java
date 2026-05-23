@@ -24,6 +24,7 @@ import java.util.Optional;
 @Builder
 public class UserService {
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Transactional
     public User CreateNewUser(CreateUserDTO userDTO) {
@@ -42,6 +43,7 @@ public class UserService {
                 userDTO.getPassword(),
                 userDTO.getRole()
         );
+        this.emailService.sendMail(userDTO.getEmail());
         return userRepository.save(user);
     }
 

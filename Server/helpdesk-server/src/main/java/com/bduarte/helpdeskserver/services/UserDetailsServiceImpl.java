@@ -1,7 +1,7 @@
 package com.bduarte.helpdeskserver.services;
 
 import com.bduarte.helpdeskserver.repositories.UserRepository;
-import com.bduarte.helpdeskserver.security.UserDetailsImpl;
+import com.bduarte.helpdeskserver.infrastructure.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

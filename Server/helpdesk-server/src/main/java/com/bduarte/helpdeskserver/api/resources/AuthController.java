@@ -1,6 +1,6 @@
 package com.bduarte.helpdeskserver.api.resources;
 
-import com.bduarte.helpdeskserver.security.UserDetailsImpl;
+import com.bduarte.helpdeskserver.infrastructure.security.UserDetailsImpl;
 import com.bduarte.helpdeskserver.services.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest req) {
-        System.out.println(new BCryptPasswordEncoder().encode("Admin1"));
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.email(), req.password()));
 
