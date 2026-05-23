@@ -4,8 +4,8 @@ services:
     image: postgres:15
     environment:
       POSTGRES_DB: helpdesk
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: ${HELPDESK_DB_USER}
+      POSTGRES_PASSWORD: ${HELPDESK_DB_PASS}
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -14,7 +14,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/helpdesk
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/helpdesk
+      DB_USER: ${HELPDESK_DB_USER}
+      DB_PASSWORD: ${HELPDESK_DB_PASS}
+      JWT_SECRET: ${HELPDESK_JWT_SECRET}
+      APP_MAIL_ADDRESS: ${HELPDESK_MAIL_ADDRESS}
+      APP_MAIL_PASS: ${HELPDESK_MAIL_PASS}
+      APP_MAIL_HOST: ${HELPDESK_MAIL_HOST}
     depends_on:
       - postgres
 
