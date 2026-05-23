@@ -23,7 +23,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest req) {
-        System.out.println(new BCryptPasswordEncoder().encode("Admin1"));
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.email(), req.password()));
 
