@@ -24,7 +24,7 @@ public class UserController {
     @PostMapping("/user")
     public ResponseEntity<Void> CreateUser(@Valid @RequestBody CreateUserDTO userDTO) {
         try {
-            User response = userService.CreateNewUser(userDTO);
+            userService.CreateNewUser(userDTO);
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception ex) {

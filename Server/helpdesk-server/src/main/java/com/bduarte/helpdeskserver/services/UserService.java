@@ -5,10 +5,14 @@ import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.models.User;
+import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import com.bduarte.helpdeskserver.repositories.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +27,14 @@ import java.util.Optional;
 @Service
 @Builder
 public class UserService {
+    @Autowired
+    private ApplicationEventPublisher publisher;
     private final UserRepository userRepository;
     private final EmailService emailService;
 
+
     @Transactional
-    public User CreateNewUser(CreateUserDTO userDTO) {
+    public void CreateNewUser(CreateUserDTO userDTO) throws MessagingException {
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
 
         if (existingUser.isPresent()) {
@@ -38,13 +45,16 @@ public class UserService {
         }
 
         User user = new User(
-                userDTO.getUsername(),
                 userDTO.getEmail(),
+                userDTO.getUsername(),
                 userDTO.getPassword(),
                 userDTO.getRole()
         );
-        this.emailService.sendMail(userDTO.getEmail());
-        return userRepository.save(user);
+        registerUser(userRepository.save(user));
+    }
+
+    private void registerUser(User user) {
+        publisher.publishEvent(new UserRegisteredEvent(user));
     }
 
     public Page<UserResponse> getUsers(UserFilter userFilter, Pageable pageable) {

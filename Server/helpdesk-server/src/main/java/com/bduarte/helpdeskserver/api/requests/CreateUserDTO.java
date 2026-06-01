@@ -24,10 +24,5 @@ public class CreateUserDTO {
     private Role role;
 
     @NotBlank(message = "Senha é obrigatória")
-    @Size(min = 8, message = "Senha deve ter no mínimo 8 caracteres")
-    @Pattern(
-            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&]).+$",
-            message = "Senha deve conter letra maiúscula, minúscula, número e caractere especial"
-    )
     private String password;
 }
