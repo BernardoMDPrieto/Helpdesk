@@ -18,19 +18,22 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Builder
 public class UserService {
-    @Autowired
-    private ApplicationEventPublisher publisher;
+    private final ApplicationEventPublisher publisher;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final AvailableTokensService availableTokensService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
 
     @Transactional
@@ -47,14 +50,18 @@ public class UserService {
         User user = new User(
                 userDTO.getEmail(),
                 userDTO.getUsername(),
-                userDTO.getPassword(),
+                passwordEncoder.encode(UUID.randomUUID().toString()),
                 userDTO.getRole()
         );
-        registerUser(userRepository.save(user));
+        User savedUser = userRepository.save(user);
+
+        String token = availableTokensService.NewUserToken(savedUser.getId());
+        registerUser(savedUser.getEmail(), savedUser.getUserName(), token);
+
     }
 
-    private void registerUser(User user) {
-        publisher.publishEvent(new UserRegisteredEvent(user));
+    private void registerUser(String email, String userName, String token) {
+        publisher.publishEvent(new UserRegisteredEvent(email, userName, token));
     }
 
     public Page<UserResponse> getUsers(UserFilter userFilter, Pageable pageable) {

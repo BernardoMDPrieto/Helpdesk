@@ -22,7 +22,4 @@ public class CreateUserDTO {
     private String email;
 
     private Role role;
-
-    @NotBlank(message = "Senha é obrigatória")
-    private String password;
 }

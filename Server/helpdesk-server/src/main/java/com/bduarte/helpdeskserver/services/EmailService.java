@@ -3,28 +3,23 @@ package com.bduarte.helpdeskserver.services;
 import com.bduarte.helpdeskserver.models.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.Builder;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 @Service
+@Builder
 public class EmailService {
 
     private final JavaMailSender mailSender;
     private final SimpleMailMessage templateMessage;
     private final TemplateEngine templateEngine;
 
-    public EmailService(JavaMailSender mailSender, SimpleMailMessage templateMessage, TemplateEngine templateEngine) {
-        this.mailSender = mailSender;
-        this.templateMessage = templateMessage;
-        this.templateEngine = templateEngine;
-    }
 
     public void sendMail(String messageTo) {
         SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
@@ -38,14 +33,14 @@ public class EmailService {
         }
     }
 
-    public void sendHtml(User user) throws MessagingException {
+    public void sendHtml(String email, String userName, String token) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
-        helper.setTo(user.getEmail());
+        helper.setTo(email);
         helper.setSubject("Cadastro de senha");
 
-        String link = "http://localhost:8080";
-        String htmlBody = BuildEmailTemplateNewUsers(user.getUserName(), link);
+        String link = "http://localhost:8080/new-user/" + token;
+        String htmlBody = BuildEmailTemplateNewUsers(userName, link);
         helper.setText(htmlBody, true);
         mailSender.send(message);
     }

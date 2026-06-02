@@ -17,7 +17,7 @@ public class UserRegistrationListener {
     @EventListener
     public void handleRegistered(UserRegisteredEvent event) throws MessagingException {
         try {
-            emailService.sendHtml(event.user());
+            emailService.sendHtml(event.email(), event.userName(), event.token());
         } catch (MessagingException e) {
             throw e;
         }

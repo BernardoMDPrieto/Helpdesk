@@ -1,4 +1,4 @@
 package com.bduarte.helpdeskserver.models;
 
-public record UserRegisteredEvent(User user) {
+public record UserRegisteredEvent(String email, String userName, String token) {
 }
