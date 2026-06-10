@@ -18,22 +18,17 @@ public class AvailableTokensService {
     private final BCryptPasswordEncoder passwordEncoder;
 
 
-    public String NewUserToken(UUID userId) {
+    public String newUserToken(UUID userId) {
         List<AvailableTokens> tokens = availableTokensRepository.findByUserId(userId);
+        tokens.stream()
+                .filter(AvailableTokens::isAvailable)
+                .forEach(tk -> {
+                    tk.setAvailable(false);
+                    availableTokensRepository.save(tk);
+                });
 
-        boolean hasValidToken = tokens.stream()
-                .anyMatch(tk -> tk.isAvailable() && tk.getExpirationDate().isAfter(LocalDateTime.now()));
-        if (hasValidToken) {
-            tokens.stream()
-                    .filter(AvailableTokens::isAvailable)
-                    .forEach(tk -> {
-                        tk.setAvailable(false);
-                        availableTokensRepository.save(tk);
-                    });
-        }
-        String token = passwordEncoder.encode(UUID.randomUUID().toString());
+        String token = UUID.randomUUID().toString();
         AvailableTokens availableTokens = new AvailableTokens(userId, token);
-
         availableTokensRepository.save(availableTokens);
 
         return token;
