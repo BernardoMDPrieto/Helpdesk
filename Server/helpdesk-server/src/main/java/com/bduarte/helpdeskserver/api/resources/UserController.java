@@ -3,7 +3,6 @@ package com.bduarte.helpdeskserver.api.resources;
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
 import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
-import com.bduarte.helpdeskserver.models.User;
 import com.bduarte.helpdeskserver.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
