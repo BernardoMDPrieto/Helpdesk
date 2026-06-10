@@ -4,14 +4,13 @@ import com.bduarte.helpdeskserver.api.filters.UserSpecification;
 import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
+import com.bduarte.helpdeskserver.models.AvailableTokens;
 import com.bduarte.helpdeskserver.models.User;
 import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import com.bduarte.helpdeskserver.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -55,8 +54,29 @@ public class UserService {
         );
         User savedUser = userRepository.save(user);
 
-        String token = availableTokensService.NewUserToken(savedUser.getId());
+        String token = availableTokensService.newUserToken(savedUser.getId());
         registerUser(savedUser.getEmail(), savedUser.getUserName(), token);
+
+    }
+
+    public void registerNewUserPassword(String password, String token) {
+        Optional<AvailableTokens> availableToken = availableTokensService.validateToken(token);
+
+        if (availableToken.isEmpty()) {
+            return;
+        }
+
+        Optional<User> user = userRepository.findById(availableToken.get().getUserId());
+
+        if (user.isEmpty()) {
+            return;
+        }
+
+        user.get().setPassword(passwordEncoder.encode(password));
+        userRepository.save(user.get());
+
+        availableToken.get().setAvailable(false);
+        availableTokensService.saveToken(availableToken.get());
 
     }
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,5 +33,14 @@ public class AvailableTokensService {
         availableTokensRepository.save(availableTokens);
 
         return token;
+    }
+
+    public Optional<AvailableTokens> validateToken(String token) {
+        return availableTokensRepository
+                .findByTokenAndExpirationDateAfterAndAvailableTrue(token, LocalDateTime.now());
+    }
+
+    public void saveToken(AvailableTokens availableTokens) {
+        availableTokensRepository.save(availableTokens);
     }
 }

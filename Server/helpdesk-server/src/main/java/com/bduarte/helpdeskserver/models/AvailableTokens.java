@@ -2,6 +2,7 @@ package com.bduarte.helpdeskserver.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "AvailableTokens")
 @Data
+@NoArgsConstructor
 public class AvailableTokens {
     public AvailableTokens(UUID userId, String token) {
         this.userId = userId;

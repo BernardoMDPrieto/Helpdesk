@@ -1,7 +1,9 @@
 package com.bduarte.helpdeskserver.api.resources;
 
+import com.bduarte.helpdeskserver.api.requests.RegisterPasswordDTO;
 import com.bduarte.helpdeskserver.infrastructure.security.UserDetailsImpl;
 import com.bduarte.helpdeskserver.services.JwtService;
+import com.bduarte.helpdeskserver.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthenticationManager authManager;
+    private final UserService userService;
     private final JwtService jwtService;
 
     @PostMapping("/login")
@@ -29,6 +32,12 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) auth.getPrincipal();
         String token = jwtService.generateToken(userDetails);
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/register-password")
+    public ResponseEntity<Void> registerPassword(@RequestBody RegisterPasswordDTO request) {
+        userService.registerNewUserPassword(request.getPassword(), request.getToken());
+        return ResponseEntity.ok().build();
     }
 
     public record LoginRequest(String email, String password) {

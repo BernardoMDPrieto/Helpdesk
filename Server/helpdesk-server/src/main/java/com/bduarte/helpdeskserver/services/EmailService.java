@@ -1,6 +1,5 @@
 package com.bduarte.helpdeskserver.services;
 
-import com.bduarte.helpdeskserver.models.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.Builder;
