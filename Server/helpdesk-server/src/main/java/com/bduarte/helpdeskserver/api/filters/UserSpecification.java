@@ -1,5 +1,6 @@
 package com.bduarte.helpdeskserver.api.filters;
 
+import com.bduarte.helpdeskserver.models.Role;
 import com.bduarte.helpdeskserver.models.User;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -27,7 +28,7 @@ public class UserSpecification {
 
     public static Specification<User> byRole(Integer role_id) {
         return (root, query, builder) ->
-                builder.equal(root.get("role_id"), role_id);
+                builder.equal(root.get("role").get("id"), role_id);
     }
 
     public static Specification<User> bySpecification(UserFilter filter) {
@@ -51,8 +52,8 @@ public class UserSpecification {
             spec = spec.and(byStatus(true));
         }
 
-        if (filter.getRole_id() != null) {
-            spec = spec.and(byRole(filter.getRole_id()));
+        if (filter.getRole() != null) {
+            spec = spec.and(byRole(filter.getRole()));
         }
 
         return spec;
