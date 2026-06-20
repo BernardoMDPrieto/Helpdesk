@@ -3,6 +3,7 @@ package com.bduarte.helpdeskserver.services;
 import com.bduarte.helpdeskserver.api.filters.UserSpecification;
 import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
+import com.bduarte.helpdeskserver.api.requests.UpdateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.models.AvailableTokens;
 import com.bduarte.helpdeskserver.models.User;
@@ -97,9 +98,31 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void updateUser(UpdateUserDTO updateUserDTO, UUID id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Usuário não encontrado"
+                ));
+
+        if (updateUserDTO.getUserName() != null) {
+            existingUser.setUserName(updateUserDTO.getUserName());
+        }
+
+        existingUser.setEnabled(updateUserDTO.getActive());
+
+        if (updateUserDTO.getRole() != null) {
+            existingUser.setRole(updateUserDTO.getRole());
+        }
+
+        userRepository.save(existingUser);
+    }
+
 
     private UserResponse converUserResponse(User user) {
         UserResponse userResponse = new UserResponse(
+                user.getId(),
                 user.getEmail(),
                 user.getUserName(),
                 user.getEnabled(),
