@@ -1,5 +1,6 @@
 package com.bduarte.helpdeskserver.services;
 
+import com.bduarte.helpdeskserver.models.ResetPasswordEvent;
 import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import jakarta.mail.MessagingException;
 import org.springframework.context.event.EventListener;
@@ -17,7 +18,17 @@ public class UserRegistrationListener {
     @EventListener
     public void handleRegistered(UserRegisteredEvent event) throws MessagingException {
         try {
-            emailService.sendHtml(event.email(), event.userName(), event.token());
+            emailService.sendMailNewUser(event.email(), event.userName(), event.token());
+        } catch (MessagingException e) {
+            throw e;
+        }
+    }
+
+    @EventListener
+    public void handleResetPassword(ResetPasswordEvent event) throws MessagingException {
+
+        try {
+            emailService.sendResetPassword(event.email(), event.userName(), event.token());
         } catch (MessagingException e) {
             throw e;
         }

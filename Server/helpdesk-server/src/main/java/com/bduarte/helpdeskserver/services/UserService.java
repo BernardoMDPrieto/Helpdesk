@@ -6,6 +6,7 @@ import com.bduarte.helpdeskserver.api.filters.UserFilter;
 import com.bduarte.helpdeskserver.api.requests.UpdateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.models.AvailableTokens;
+import com.bduarte.helpdeskserver.models.ResetPasswordEvent;
 import com.bduarte.helpdeskserver.models.User;
 import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import com.bduarte.helpdeskserver.repositories.UserRepository;
@@ -60,7 +61,18 @@ public class UserService {
 
     }
 
-    public void registerNewUserPassword(String password, String token) {
+    public void requestResetPassword(String email) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Usuário não encontrado"
+                ));
+
+        String token = availableTokensService.newUserToken(existingUser.getId());
+        registerRequestResetPassword(existingUser.getEmail(), existingUser.getUserName(), token);
+    }
+
+    public void registerPassword(String password, String token) {
         Optional<AvailableTokens> availableToken = availableTokensService.validateToken(token);
 
         if (availableToken.isEmpty()) {
@@ -79,6 +91,10 @@ public class UserService {
         availableToken.get().setAvailable(false);
         availableTokensService.saveToken(availableToken.get());
 
+    }
+
+    private void registerRequestResetPassword(String email, String userName, String token) {
+        publisher.publishEvent(new ResetPasswordEvent(email, userName, token));
     }
 
     private void registerUser(String email, String userName, String token) {
