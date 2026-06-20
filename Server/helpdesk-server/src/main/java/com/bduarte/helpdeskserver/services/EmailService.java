@@ -32,7 +32,7 @@ public class EmailService {
         }
     }
 
-    public void sendHtml(String email, String userName, String token) throws MessagingException {
+    public void sendMailNewUser(String email, String userName, String token) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
         helper.setTo(email);
@@ -42,6 +42,28 @@ public class EmailService {
         String htmlBody = BuildEmailTemplateNewUsers(userName, link);
         helper.setText(htmlBody, true);
         mailSender.send(message);
+    }
+
+    public void sendResetPassword(String email, String userName, String token) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        helper.setTo(email);
+        helper.setSubject("Cadastro de senha");
+
+        String link = "http://localhost:8080/reset-password/" + token;
+        String htmlBody = BuildEmailTemplateResetPassword(userName, link);
+        helper.setText(htmlBody, true);
+        mailSender.send(message);
+    }
+
+    private String BuildEmailTemplateResetPassword(String username, String passLink) {
+
+        Context context = new Context();
+
+        context.setVariable("username", username);
+        context.setVariable("passLink", passLink);
+
+        return templateEngine.process("emails/ResetPasswordTemplate", context);
     }
 
     private String BuildEmailTemplateNewUsers(String username, String passLink) {

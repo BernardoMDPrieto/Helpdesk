@@ -2,6 +2,7 @@ package com.bduarte.helpdeskserver.api.resources;
 
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
 import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
+import com.bduarte.helpdeskserver.api.requests.UpdateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.services.UserService;
 import jakarta.validation.Valid;
@@ -13,6 +14,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin")
@@ -27,7 +30,7 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception ex) {
-            throw new RuntimeException("Falha na criação de usuário: " + ex.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -37,5 +40,17 @@ public class UserController {
 
         Page<UserResponse> users = userService.getUsers(userFilter, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(users);
+    }
+
+    @PutMapping("/user/{userId}")
+    public ResponseEntity<Void> updateUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID userId) {
+        try {
+            userService.updateUser(userDTO, userId);
+
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        } catch (Exception ex) {
+            return ResponseEntity.badRequest().build();
+        }
+
     }
 }

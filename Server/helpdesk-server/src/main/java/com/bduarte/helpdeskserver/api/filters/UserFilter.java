@@ -7,6 +7,6 @@ public class UserFilter {
 
     private String email;
     private String userName;
-    private Integer role_id;
+    private Integer role;
     private boolean status;
 }

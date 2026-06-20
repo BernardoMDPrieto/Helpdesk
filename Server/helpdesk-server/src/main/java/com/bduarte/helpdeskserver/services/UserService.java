@@ -3,8 +3,10 @@ package com.bduarte.helpdeskserver.services;
 import com.bduarte.helpdeskserver.api.filters.UserSpecification;
 import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.filters.UserFilter;
+import com.bduarte.helpdeskserver.api.requests.UpdateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.models.AvailableTokens;
+import com.bduarte.helpdeskserver.models.ResetPasswordEvent;
 import com.bduarte.helpdeskserver.models.User;
 import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import com.bduarte.helpdeskserver.repositories.UserRepository;
@@ -59,7 +61,18 @@ public class UserService {
 
     }
 
-    public void registerNewUserPassword(String password, String token) {
+    public void requestResetPassword(String email) {
+        User existingUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Usuário não encontrado"
+                ));
+
+        String token = availableTokensService.newUserToken(existingUser.getId());
+        registerRequestResetPassword(existingUser.getEmail(), existingUser.getUserName(), token);
+    }
+
+    public void registerPassword(String password, String token) {
         Optional<AvailableTokens> availableToken = availableTokensService.validateToken(token);
 
         if (availableToken.isEmpty()) {
@@ -80,6 +93,10 @@ public class UserService {
 
     }
 
+    private void registerRequestResetPassword(String email, String userName, String token) {
+        publisher.publishEvent(new ResetPasswordEvent(email, userName, token));
+    }
+
     private void registerUser(String email, String userName, String token) {
         publisher.publishEvent(new UserRegisteredEvent(email, userName, token));
     }
@@ -97,9 +114,31 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public void updateUser(UpdateUserDTO updateUserDTO, UUID id) {
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.CONFLICT,
+                        "Usuário não encontrado"
+                ));
+
+        if (updateUserDTO.getUserName() != null) {
+            existingUser.setUserName(updateUserDTO.getUserName());
+        }
+
+        existingUser.setEnabled(updateUserDTO.getActive());
+
+        if (updateUserDTO.getRole() != null) {
+            existingUser.setRole(updateUserDTO.getRole());
+        }
+
+        userRepository.save(existingUser);
+    }
+
 
     private UserResponse converUserResponse(User user) {
         UserResponse userResponse = new UserResponse(
+                user.getId(),
                 user.getEmail(),
                 user.getUserName(),
                 user.getEnabled(),
