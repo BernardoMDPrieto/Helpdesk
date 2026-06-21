@@ -13,6 +13,8 @@ import com.bduarte.helpdeskserver.repositories.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,6 +32,7 @@ import java.util.UUID;
 @Service
 @Builder
 public class UserService {
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final ApplicationEventPublisher publisher;
     private final UserRepository userRepository;
     private final EmailService emailService;
@@ -39,9 +42,11 @@ public class UserService {
 
     @Transactional
     public void CreateNewUser(CreateUserDTO userDTO) throws MessagingException {
+        logger.info("Creating new user with email: {}", userDTO.getEmail());
         Optional<User> existingUser = userRepository.findByEmail(userDTO.getEmail());
 
         if (existingUser.isPresent()) {
+            logger.warn("Attempted to create user with email that already exists: {}", userDTO.getEmail());
             throw new ResponseStatusException(
                     HttpStatus.CONFLICT,
                     "Usuário com e-mail já cadastrado"
@@ -55,42 +60,54 @@ public class UserService {
                 userDTO.getRole()
         );
         User savedUser = userRepository.save(user);
+        logger.debug("User saved successfully with ID: {}", savedUser.getId());
 
         String token = availableTokensService.newUserToken(savedUser.getId());
+        logger.debug("Token generated for new user: {}", savedUser.getId());
         registerUser(savedUser.getEmail(), savedUser.getUserName(), token);
-
+        logger.info("User registration event published for email: {}", savedUser.getEmail());
     }
 
     public void requestResetPassword(String email) {
+        logger.info("Password reset requested for email: {}", email);
         User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Usuário não encontrado"
-                ));
+                .orElseThrow(() -> {
+                    logger.warn("Password reset requested but user not found for email: {}", email);
+                    return new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "Usuário não encontrado"
+                    );
+                });
 
         String token = availableTokensService.newUserToken(existingUser.getId());
+        logger.debug("Reset password token generated for user ID: {}", existingUser.getId());
         registerRequestResetPassword(existingUser.getEmail(), existingUser.getUserName(), token);
+        logger.info("Password reset event published for email: {}", existingUser.getEmail());
     }
 
     public void registerPassword(String password, String token) {
+        logger.info("Attempting to register password with token");
         Optional<AvailableTokens> availableToken = availableTokensService.validateToken(token);
 
         if (availableToken.isEmpty()) {
+            logger.warn("Invalid or expired token provided for password registration");
             return;
         }
 
         Optional<User> user = userRepository.findById(availableToken.get().getUserId());
 
         if (user.isEmpty()) {
+            logger.error("User not found for ID: {}", availableToken.get().getUserId());
             return;
         }
 
         user.get().setPassword(passwordEncoder.encode(password));
         userRepository.save(user.get());
+        logger.info("Password updated successfully for user ID: {}", user.get().getId());
 
         availableToken.get().setAvailable(false);
         availableTokensService.saveToken(availableToken.get());
-
+        logger.debug("Token invalidated for user ID: {}", user.get().getId());
     }
 
     private void registerRequestResetPassword(String email, String userName, String token) {
@@ -102,37 +119,48 @@ public class UserService {
     }
 
     public Page<UserResponse> getUsers(UserFilter userFilter, Pageable pageable) {
+        logger.info("Fetching users with filter: {} and pageable: page={}, size={}", userFilter, pageable.getPageNumber(), pageable.getPageSize());
         try {
             Specification<User> spec = UserSpecification.bySpecification(userFilter);
 
             Page<User> users = userRepository.findAll(spec, pageable);
             List<UserResponse> userResponseList = users.getContent().stream().map(this::converUserResponse).toList();
 
+            logger.debug("Retrieved {} users from database", users.getTotalElements());
             return new PageImpl<>(userResponseList, pageable, users.getTotalElements());
         } catch (Exception exception) {
+            logger.error("Error fetching users", exception);
             throw exception;
         }
     }
 
     @Transactional
     public void updateUser(UpdateUserDTO updateUserDTO, UUID id) {
+        logger.info("Updating user with ID: {}", id);
         User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.CONFLICT,
-                        "Usuário não encontrado"
-                ));
+                .orElseThrow(() -> {
+                    logger.warn("Update attempted but user not found with ID: {}", id);
+                    return new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "Usuário não encontrado"
+                    );
+                });
 
         if (updateUserDTO.getUserName() != null) {
             existingUser.setUserName(updateUserDTO.getUserName());
+            logger.debug("Updated username for user ID: {}", id);
         }
 
         existingUser.setEnabled(updateUserDTO.getActive());
+        logger.debug("Updated active status to: {} for user ID: {}", updateUserDTO.getActive(), id);
 
         if (updateUserDTO.getRole() != null) {
             existingUser.setRole(updateUserDTO.getRole());
+            logger.debug("Updated role to: {} for user ID: {}", updateUserDTO.getRole().getName(), id);
         }
 
         userRepository.save(existingUser);
+        logger.info("User ID: {} updated successfully", id);
     }
 
 
