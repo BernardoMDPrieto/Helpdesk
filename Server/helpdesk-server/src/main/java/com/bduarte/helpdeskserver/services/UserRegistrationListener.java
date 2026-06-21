@@ -4,6 +4,7 @@ import com.bduarte.helpdeskserver.models.ResetPasswordEvent;
 import com.bduarte.helpdeskserver.models.UserRegisteredEvent;
 import jakarta.mail.MessagingException;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,6 +17,7 @@ public class UserRegistrationListener {
     }
 
     @EventListener
+    @Async
     public void handleRegistered(UserRegisteredEvent event) throws MessagingException {
         try {
             emailService.sendMailNewUser(event.email(), event.userName(), event.token());
@@ -25,6 +27,7 @@ public class UserRegistrationListener {
     }
 
     @EventListener
+    @Async
     public void handleResetPassword(ResetPasswordEvent event) throws MessagingException {
 
         try {
