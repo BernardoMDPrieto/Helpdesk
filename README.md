@@ -58,6 +58,10 @@ Em desenvolvimento ativo — última atualização: **junho/2026**
 
 <img width="2800" height="1680" alt="helpdesk_architecture" src="https://github.com/user-attachments/assets/1da5ddb4-e58e-4261-b039-9f4c455fc7bc" />
 
+# Diagrama de Classes UML
+
+<img width="1472" height="1256" alt="image" src="https://github.com/user-attachments/assets/5baf0217-88bd-4450-9418-1cce02ce9819" />
+
 
 ### Decisões técnicas
 
