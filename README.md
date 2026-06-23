@@ -112,7 +112,7 @@ HELPDESK_MAIL_HOST=smtp.exemplo.com
 
 ### Subindo o projeto
 
-\```
+```
 bash
 # Clone o repositório
 git clone [https://github.com/seu-usuario/helpdesk-sla-manager.git](https://github.com/BernardoMDPrieto/Helpdesk.git)
@@ -121,7 +121,7 @@ git clone [https://github.com/seu-usuario/helpdesk-sla-manager.git](https://gith
 
 # Suba todos os serviços (builda backend e frontend automaticamente)
 docker-compose up --build
-\```
+```
 
 A aplicação estará disponível em:
 - Frontend: `http://localhost:4200`
