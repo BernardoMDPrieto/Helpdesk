@@ -61,13 +61,6 @@ Em desenvolvimento ativo — última atualização: **junho/2026**
 # Diagrama de Classes UML
 <img width="2644" height="1701" alt="HelpdeskUML drawio" src="https://github.com/user-attachments/assets/cc8e2d51-5230-4c6b-a593-238f1db35aa6" />
 
-
-### Decisões técnicas
-
-- **Por que SLA calculado e verificado via job agendado?** Simula um cenário real onde o sistema precisa reagir a prazos sem depender de uma requisição do usuário.
-- **Por que WebSocket em vez de polling?** Reduz carga no backend e fornece atualização instantânea para supervisores monitorando violações de SLA.
-- **Por que DTOs separados das entidades?** Evita expor a estrutura interna do banco na API e facilita versionamento do contrato com o frontend.
-
 ---
 
 ## ⚙️ Funcionalidades
@@ -126,20 +119,9 @@ A aplicação estará disponível em:
 - Frontend: `http://localhost:4200`
 - Backend: `http://localhost:8080`
 
-
-## 🗺️ Roadmap
-
-1. **Fundação** — repositório, Docker, CI ✅
-2. **Autenticação** — JWT, Spring Security, cadastro com e-mail de primeiro acesso ✅
-3. **Core de tickets** — CRUD, SLA, histórico 🚧
-4. **Tempo real** — WebSocket, scheduler de SLA, notificações ⏳
-5. **Frontend** — Angular, guards de rota, telas de autenticação e tickets ⏳
-6. **Dashboard e relatórios** — métricas e exportação ⏳
-7. **Qualidade e entrega** — testes, seed de dados, deploy (CD) ⏳
-
 ## 👤 Autor
 
-Desenvolvido por **Bernardo Prieto** como projeto de portfólio.
+Desenvolvido por **Bernardo Prieto**.
 
 [LinkedIn](https://www.linkedin.com/in/bernardoprieto) · [GitHub](https://github.com/BernardoMDPrieto)
 
