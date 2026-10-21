@@ -5,6 +5,7 @@ import com.bduarte.helpdeskserver.services.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,6 +34,8 @@ public class SecurityConfig {
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/config/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/tickets/**").hasAnyRole("ADMIN", "CUSTOMER")
+                        .requestMatchers(HttpMethod.DELETE, "/tickets/**").hasRole("ADMIN")
                         .requestMatchers("/tickets/**").hasAnyRole("ADMIN", "AGENT", "CUSTOMER")
                         .requestMatchers("/reports/**").hasAnyRole("ADMIN", "VIEWER")
                         .anyRequest().authenticated()

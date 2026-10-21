@@ -1,13 +1,18 @@
 package com.bduarte.helpdeskserver.models;
 
 import com.bduarte.helpdeskserver.enums.Priority;
+import com.bduarte.helpdeskserver.enums.TicketStatus;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "tickets")
+@Data
+@NoArgsConstructor
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,8 +30,8 @@ public class Ticket {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ticket_status_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TicketStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
