@@ -2,11 +2,15 @@ package com.bduarte.helpdeskserver.models;
 
 import com.bduarte.helpdeskserver.enums.Priority;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(
         name = "sla_configs",
         uniqueConstraints = @UniqueConstraint(columnNames = {"category_id", "priority"}))
+@Data
+@NoArgsConstructor
 public class SlaConfig {
 
     @Id
