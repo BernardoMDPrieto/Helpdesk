@@ -70,15 +70,15 @@ public class UserService {
 
     public void requestResetPassword(String email) {
         logger.info("Password reset requested for email: {}", email);
-        User existingUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> {
-                    logger.warn("Password reset requested but user not found for email: {}", email);
-                    return new ResponseStatusException(
-                            HttpStatus.CONFLICT,
-                            "Usuário não encontrado"
-                    );
-                });
+        Optional<User> user = userRepository.findByEmail(email);
 
+        // Answer the same way whether or not the e-mail exists, so the endpoint can't be used to discover accounts
+        if (user.isEmpty()) {
+            logger.warn("Password reset requested but user not found for email: {}", email);
+            return;
+        }
+
+        User existingUser = user.get();
         String token = availableTokensService.newUserToken(existingUser.getId());
         logger.debug("Reset password token generated for user ID: {}", existingUser.getId());
         registerRequestResetPassword(existingUser.getEmail(), existingUser.getUserName(), token);
@@ -91,14 +91,20 @@ public class UserService {
 
         if (availableToken.isEmpty()) {
             logger.warn("Invalid or expired token provided for password registration");
-            return;
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Token inválido ou expirado"
+            );
         }
 
         Optional<User> user = userRepository.findById(availableToken.get().getUserId());
 
         if (user.isEmpty()) {
             logger.error("User not found for ID: {}", availableToken.get().getUserId());
-            return;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Usuário não encontrado"
+            );
         }
 
         user.get().setPassword(passwordEncoder.encode(password));
@@ -141,7 +147,7 @@ public class UserService {
                 .orElseThrow(() -> {
                     logger.warn("Update attempted but user not found with ID: {}", id);
                     return new ResponseStatusException(
-                            HttpStatus.CONFLICT,
+                            HttpStatus.NOT_FOUND,
                             "Usuário não encontrado"
                     );
                 });
@@ -151,8 +157,10 @@ public class UserService {
             logger.debug("Updated username for user ID: {}", id);
         }
 
-        existingUser.setEnabled(updateUserDTO.getActive());
-        logger.debug("Updated active status to: {} for user ID: {}", updateUserDTO.getActive(), id);
+        if (updateUserDTO.getActive() != null) {
+            existingUser.setEnabled(updateUserDTO.getActive());
+            logger.debug("Updated active status to: {} for user ID: {}", updateUserDTO.getActive(), id);
+        }
 
         if (updateUserDTO.getRole() != null) {
             existingUser.setRole(updateUserDTO.getRole());

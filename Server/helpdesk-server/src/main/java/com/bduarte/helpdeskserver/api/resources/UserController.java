@@ -5,6 +5,7 @@ import com.bduarte.helpdeskserver.api.requests.CreateUserDTO;
 import com.bduarte.helpdeskserver.api.requests.UpdateUserDTO;
 import com.bduarte.helpdeskserver.api.responses.UserResponse;
 import com.bduarte.helpdeskserver.services.UserService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,16 +29,11 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/user")
-    public ResponseEntity<Void> CreateUser(@Valid @RequestBody CreateUserDTO userDTO) {
+    public ResponseEntity<Void> CreateUser(@Valid @RequestBody CreateUserDTO userDTO) throws MessagingException {
         logger.info("Create user request received for email: {}", userDTO.getEmail());
-        try {
-            userService.CreateNewUser(userDTO);
-            logger.info("User created successfully with email: {}", userDTO.getEmail());
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Exception ex) {
-            logger.error("Error creating user with email: {}", userDTO.getEmail(), ex);
-            return ResponseEntity.badRequest().build();
-        }
+        userService.CreateNewUser(userDTO);
+        logger.info("User created successfully with email: {}", userDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("/user")
@@ -57,13 +53,8 @@ public class UserController {
     @PutMapping("/user/{userId}")
     public ResponseEntity<Void> updateUser(@RequestBody UpdateUserDTO userDTO, @PathVariable UUID userId) {
         logger.info("Update user request received for user ID: {}", userId);
-        try {
-            userService.updateUser(userDTO, userId);
-            logger.info("User updated successfully with ID: {}", userId);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception ex) {
-            logger.error("Error updating user with ID: {}", userId, ex);
-            return ResponseEntity.badRequest().build();
-        }
+        userService.updateUser(userDTO, userId);
+        logger.info("User updated successfully with ID: {}", userId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

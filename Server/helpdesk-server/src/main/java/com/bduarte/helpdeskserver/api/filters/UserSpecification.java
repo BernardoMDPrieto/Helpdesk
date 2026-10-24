@@ -23,7 +23,7 @@ public class UserSpecification {
 
     public static Specification<User> byStatus(Boolean status) {
         return (root, query, builder) ->
-                builder.equal(root.get("status"), status);
+                builder.equal(root.get("enabled"), status);
     }
 
     public static Specification<User> byRole(Integer role_id) {
