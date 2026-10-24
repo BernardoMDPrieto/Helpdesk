@@ -167,9 +167,9 @@ public class TicketServices {
                 });
     }
 
-    private Ticket findAccessibleTicket(UUID id, User currentUser) {
+    public Ticket findAccessibleTicket(UUID id, User currentUser) {
         Ticket ticket = findTicket(id);
-        // Customers must not learn about tickets from other customers, so they get the same 404
+
         if (isCustomer(currentUser) && !ticket.getCustomer().getId().equals(currentUser.getId())) {
             logger.warn("Customer ID: {} attempted to access ticket ID: {} from another customer", currentUser.getId(), id);
             throw ticketNotFound();
@@ -224,7 +224,7 @@ public class TicketServices {
         return agent;
     }
 
-    private boolean isCustomer(User user) {
+    boolean isCustomer(User user) {
         return user.getRole().getName() == Role.RoleName.ROLE_CUSTOMER;
     }
 

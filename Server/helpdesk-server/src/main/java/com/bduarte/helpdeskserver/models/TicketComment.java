@@ -2,6 +2,7 @@ package com.bduarte.helpdeskserver.models;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "ticket_comments")
 @Getter
+@Setter
 public class TicketComment {
 
     @Id
@@ -23,6 +25,7 @@ public class TicketComment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     private boolean isInternal;
