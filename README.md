@@ -21,7 +21,7 @@ O objetivo é ir além de um CRUD básico — o sistema inclui autenticação co
 
 ## 🚧 Status do projeto
 
-Em desenvolvimento ativo — última atualização: **junho/2026**
+Em desenvolvimento ativo — última atualização: **outubro/2026**
 
 - [x] Estrutura do projeto, Docker Compose e CI configurados
 - [x] Autenticação e controle de acesso (JWT + Spring Security)
