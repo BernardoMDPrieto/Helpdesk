@@ -26,7 +26,7 @@ Em desenvolvimento ativo — última atualização: **junho/2026**
 - [x] Estrutura do projeto, Docker Compose e CI configurados
 - [x] Autenticação e controle de acesso (JWT + Spring Security)
 - [x] Cadastro de usuários com envio de e-mail para primeiro acesso
-- [ ] CRUD de tickets com filtros e paginação
+- [x] CRUD de tickets com filtros e paginação
 - [ ] SLA scheduler e alertas em tempo real
 - [ ] Dashboard de métricas e relatórios
 - [ ] Testes de integração adicionais
